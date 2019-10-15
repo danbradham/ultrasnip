@@ -1,7 +1,9 @@
 
 .. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip.png
     :target: https://github.com/danbradham/ultrasnip
-    :alt: Bands
+    :alt: UltraSnip
+    :width: 64px
+    :height: 64px
 
 .. image:: https://img.shields.io/github/license/danbradham/ultrasnip.svg?style=flat-square
     :target: https://github.com/danbradham/ultrasnip/blob/master/LICENSE
