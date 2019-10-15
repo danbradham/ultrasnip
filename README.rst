@@ -1,13 +1,16 @@
 
-.. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip.png
+.. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip_sm.png
     :target: https://github.com/danbradham/ultrasnip
     :alt: UltraSnip
-    :width: 64px
-    :height: 64px
 
 .. image:: https://img.shields.io/github/license/danbradham/ultrasnip.svg?style=flat-square
     :target: https://github.com/danbradham/ultrasnip/blob/master/LICENSE
     :alt: License
+
+
+.. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip_sm.png
+    :target: https://github.com/danbradham/ultrasnip
+    :alt: UltraSnip
 
 =========
 UltraSnip
@@ -16,6 +19,7 @@ A desktop snipping tool written in Qt for Python.
 
 Unlike other desktop snipping tools - UltraSnip is written to help you make pixel-perfect captures.
 
+.. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip_preview.png
 
 Features
 ========

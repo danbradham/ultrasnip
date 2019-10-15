@@ -1261,6 +1261,9 @@ def main():
         while not confirm(capture_region(region)):
             region = select(region)
 
+    if region is None:
+        sys.exit(1)
+
     if args.measure:
         print('%sx%s' % (region.width(), region.height()))
 
@@ -1269,8 +1272,6 @@ def main():
         pixmap.save(args.save)
     elif args.measure:
         return
-    elif region is None:
-        sys.exit(1)
     else:
         from io import BytesIO
         byte_array = QtCore.QByteArray()
