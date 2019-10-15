@@ -7,11 +7,6 @@
     :target: https://github.com/danbradham/ultrasnip/blob/master/LICENSE
     :alt: License
 
-
-.. image:: https://raw.github.com/danbradham/ultrasnip/master/ultrasnip_sm.png
-    :target: https://github.com/danbradham/ultrasnip
-    :alt: UltraSnip
-
 =========
 UltraSnip
 =========
