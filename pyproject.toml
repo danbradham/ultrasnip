@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ultrasnip"
-version = "0.1.0"
+version = "0.1.1"
 description = "A desktop snipping tool written in Qt for Python."
 authors = ["Dan Bradham <danielbradham@gmail.com>"]
 license = "MIT"

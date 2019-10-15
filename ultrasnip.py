@@ -6,7 +6,7 @@ import sys
 from math import ceil, sqrt
 from Qt import QtWidgets, QtCore, QtGui
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __title__ = 'UltraSnip'
 __author__ = 'Dan Bradham'
 __license__ = 'MIT'
