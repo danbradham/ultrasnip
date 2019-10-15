@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "ultrasnip"
+version = "0.1.0"
+description = "A desktop snipping tool written in Qt for Python."
+authors = ["Dan Bradham <danielbradham@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^2.7"
+"Qt.py" = "^1.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
