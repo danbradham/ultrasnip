@@ -6,21 +6,27 @@ import sys
 from math import ceil, sqrt
 from Qt import QtWidgets, QtCore, QtGui
 
-
-default_colors = dict(
-    active=QtGui.QColor(255, 55, 115, 255),
-    inactive=QtGui.QColor(153, 33, 93, 255),
-    hover=QtGui.QColor(204, 44, 124, 255),
-    white=QtGui.QColor(255, 255, 255, 255),
-    black=QtGui.QColor(0, 0, 0, 255),
-    empty=QtGui.QColor(255, 255, 255, 0),
-    foreground=QtGui.QColor(255, 255, 255, 1),
-    background=QtGui.QColor(255, 55, 115, 50),
-)
-default_font = QtGui.QFont('Sans Serif', 10, 50)
+__version__ = '0.1.0'
+__title__ = 'UltraSnip'
+__author__ = 'Dan Bradham'
+__license__ = 'MIT'
+__email__ = 'danielbradham@gmail.com'
+__url__ = 'https://github.com/danbradham/ultrasnip'
+version_info = tuple([int(x) for x in __version__.split('.')])
 
 
 class UltraSnip(QtWidgets.QDialog):
+    '''The main UltraSnip Dialog. This class is used to select a section of
+    your desktop. This dialog is implemented as a single widget with a custom
+    paint method. Custom Widget and Manipulator classes are implemented to
+    handle manipulation and painting of their respective portion of the UI.
+
+    Arguments:
+        region (QtCore.QRect)- Optional starting region
+        font (QtGui.QFont) - Optional font
+        colors (dict) - Dict of QtGui.QColor objects for theming
+        parent (QWidget) - Parent QWidget
+    '''
 
     def __init__(self, region=None, font=None, colors=None, parent=None):
         super(UltraSnip, self).__init__(parent)
@@ -60,6 +66,8 @@ class UltraSnip(QtWidgets.QDialog):
         self.grab_desktop()
 
     def grab_desktop(self):
+        '''Grab the current virtual desktop.'''
+
         app = QtWidgets.QApplication.instance()
         region = app.primaryScreen().virtualGeometry()
         pixmap = app.primaryScreen().grabWindow(
@@ -73,6 +81,8 @@ class UltraSnip(QtWidgets.QDialog):
         self.update_zoom_manipulators(pixmap)
 
     def update_zoom_manipulators(self, pixmap):
+        '''Create or update the zoom manipulators based on the input pixmap.'''
+
         if self.has_zoom_manipulators:
             for w in self.widgets.widgets:
                 if isinstance(w, ZoomManipulator):
@@ -212,10 +222,22 @@ class UltraSnip(QtWidgets.QDialog):
 class Theme(object):
     '''Theme object handles colors, pens, brushes, and fonts.'''
 
+    default_colors = dict(
+        active=QtGui.QColor(255, 55, 115, 255),
+        inactive=QtGui.QColor(153, 33, 93, 255),
+        hover=QtGui.QColor(204, 44, 124, 255),
+        white=QtGui.QColor(255, 255, 255, 255),
+        black=QtGui.QColor(0, 0, 0, 255),
+        empty=QtGui.QColor(255, 255, 255, 0),
+        foreground=QtGui.QColor(255, 255, 255, 1),
+        background=QtGui.QColor(255, 55, 115, 50),
+    )
+    default_font = QtGui.QFont('Sans Serif', 10, 50)
+
     def __init__(self, margins=None, font=None, **colors):
         self.margins = margins or px(20)
-        self._font = font or default_font
-        self.colors = dict(default_colors, **colors)
+        self._font = font or self.default_font
+        self.colors = dict(self.default_colors, **colors)
 
     def solid(self, color='white', width=1):
         return QtGui.QPen(self.colors[color], width, QtCore.Qt.SolidLine)
@@ -239,6 +261,8 @@ class Theme(object):
 
 
 def precision():
+    '''Returns the current manipulation precision based on key modifiers.'''
+
     modifiers = QtWidgets.QApplication.instance().keyboardModifiers()
     if modifiers & QtCore.Qt.ShiftModifier:
         return 10
@@ -248,6 +272,8 @@ def precision():
 
 
 class WidgetGroup(object):
+    '''A List of Widgets used to maintain all interactions between a
+    parent widget and this list of widgets.'''
 
     def __init__(self, *widgets):
         self.widgets = list(widgets)
@@ -364,6 +390,7 @@ class WidgetGroup(object):
 
 
 class Widget(QtCore.QObject):
+    '''Base class for all widgets.'''
 
     clicked = QtCore.Signal()
     pressed = QtCore.Signal()
@@ -458,6 +485,7 @@ class Widget(QtCore.QObject):
 
 
 class Manipulator(Widget):
+    '''Base class for all manipulators.'''
 
     def key_left(self):
         self.move(-1 * precision(), 0)
@@ -473,6 +501,11 @@ class Manipulator(Widget):
 
 
 class ZoomManipulator(Manipulator):
+    '''Zoom manipulator widget.
+
+    An enlarged view of one corner of a rect. Adjusts the location of
+    the corner of the rect when arrow keys are pressed.
+    '''
 
     def __init__(self, parent, pixmap, corner, pos, rect):
         super(ZoomManipulator, self).__init__(parent)
@@ -594,6 +627,11 @@ class ZoomManipulator(Manipulator):
 
 
 class CornerManipulator(Manipulator):
+    '''Corner manipulator widget.
+
+    Handle positioned relative one corner of a rect. Adjusts the location of
+    the corner when mouse is dragged or arrow keys are pressed.
+    '''
 
     def __init__(self, parent, corner='topLeft'):
         super(CornerManipulator, self).__init__(parent)
@@ -635,6 +673,11 @@ class CornerManipulator(Manipulator):
 
 
 class SideManipulator(Manipulator):
+    '''Side manipulator widget.
+
+    Handle positioned relative one side of a rect. Adjusts the location of
+    the side when mouse is dragged or arrow keys are pressed.
+    '''
 
     def __init__(self, parent, side='top'):
         super(SideManipulator, self).__init__(parent)
@@ -720,6 +763,12 @@ class SideManipulator(Manipulator):
 
 
 class MoveManipulator(Manipulator):
+    '''Move manipulator widget.
+
+    Handle positioned relative to the input rect. Moves the input rect when
+    dragged or when the arrow keys are pressed.
+    '''
+
 
     alt_arrows = [
         QtGui.QPolygon.fromList([
@@ -856,6 +905,11 @@ class MoveManipulator(Manipulator):
 
 
 class Text(Widget):
+    '''A Text widget.
+
+    Text
+    '''
+
 
     def __init__(self, parent, text, pos):
         super(Text, self).__init__(parent)
@@ -880,6 +934,11 @@ class Text(Widget):
 
 
 class Button(Widget):
+    '''A Button widget.
+
+    | button |
+    '''
+
 
     def __init__(self, parent, text, pos):
         super(Button, self).__init__(parent)
@@ -914,6 +973,10 @@ class Button(Widget):
 
 
 class Options(Widget):
+    '''An Options widget.
+
+    < | option | >
+    '''
 
     arrows = [
         QtGui.QPolygon.fromList([
@@ -1021,6 +1084,7 @@ class Options(Widget):
 
 
 class Confirm(QtWidgets.QDialog):
+    '''A dead simple confirmation dialog that displays a pixmap.'''
 
     def __init__(self, pixmap, title, reject, accept, parent=None):
         super(Confirm, self).__init__(parent)
@@ -1045,6 +1109,8 @@ class Confirm(QtWidgets.QDialog):
         self.setLayout(self.layout)
         self.setWindowTitle(title)
 
+
+# Helper functions
 
 def clip(value, minimum, maximum):
     return min(max(minimum, value), maximum)
@@ -1075,23 +1141,38 @@ def px(value):
 # Functional API #
 
 class EventLoop(object):
-    _instance = None
+    '''Simply stores a reference to the current QApplication instance.'''
+
+    standalone = False
+    instance = None
 
 
 def get_event_loop():
+    '''Get the QApplication event loop.'''
 
-    if EventLoop._instance:
-        return EventLoop._instance
+    if EventLoop.instance:
+        return EventLoop.instance
 
     qapp = QtWidgets.QApplication.instance()
     if not qapp:
+        EventLoop.standalone = True
         qapp = QtWidgets.QApplication([])
 
-    EventLoop._instance = qapp
+    EventLoop.instance = qapp
 
 
 def confirm(pixmap, title='Confirm?', reject='Cancel', accept='Accept'):
-    '''Preview and confirm a pixmap in a dialog.'''
+    '''Preview and confirm a pixmap in a dialog.
+
+    Arguments:
+        pixmap (QtGui.QPixmap) - The pixmap to preview for confirmation.
+        title (str) - Window title.
+        reject (str) - Reject button text.
+        accept (str) - Accept button text.
+    Returns:
+        True or False
+    '''
+
     get_event_loop()
     return Confirm(pixmap, title, reject, accept).exec_()
 
@@ -1146,6 +1227,61 @@ def select_and_capture(region=None, font=None, colors=None):
     return capture_region(region)
 
 
+def main():
+    '''CLI interface'''
+
+    import argparse
+    parser = argparse.ArgumentParser(
+        prog='UltraSnip',
+        description='A desktop snipping tool written in Qt for Python.'
+    )
+    parser.add_argument(
+        '--save',
+        '-s',
+        type=str,
+        help='Path to save capture to for example: output.png',
+    )
+    parser.add_argument(
+        '--measure',
+        '-m',
+        action='store_true',
+        help='Output only the width and height of the region.',
+    )
+    parser.add_argument(
+        '--confirm',
+        '-c',
+        action='store_true',
+        help='Confirm the resulting pixmap using a simple dialog.',
+    )
+
+    args = parser.parse_args()
+
+    region = select()
+    if args.confirm:
+        while not confirm(capture_region(region)):
+            region = select(region)
+
+    if args.measure:
+        print('%sx%s' % (region.width(), region.height()))
+
+    pixmap = capture_region(region)
+    if args.save:
+        pixmap.save(args.save)
+    elif args.measure:
+        return
+    else:
+        from io import BytesIO
+        byte_array = QtCore.QByteArray()
+        buffer = QtCore.QBuffer(byte_array)
+        buffer.open(QtCore.QIODevice.WriteOnly)
+        pixmap.save(buffer, 'PNG')
+        string_io = BytesIO(byte_array.data())
+        string_io.seek(0)
+        sys.stdout.buffer.write(string_io.read())
+        sys.stdout.flush()
+
+    sys.exit()
+
+
 if __name__ == "__main__":
-    pixmap = select_and_capture()
-    confirm(pixmap)
+    main()
