@@ -1269,6 +1269,8 @@ def main():
         pixmap.save(args.save)
     elif args.measure:
         return
+    elif region is None:
+        sys.exit(1)
     else:
         from io import BytesIO
         byte_array = QtCore.QByteArray()
