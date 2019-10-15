@@ -6,7 +6,7 @@ authors = ["Dan Bradham <danielbradham@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "~2.7, ^3.6"
+python = "~2.7 || ^3.2"
 "Qt.py" = "^1.2"
 
 [tool.poetry.scripts]
